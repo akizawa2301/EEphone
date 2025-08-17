@@ -4057,6 +4057,89 @@ input:checked + .slider:before {
 }
 
 /* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
+/* --- Time Skip Modal --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-window {
+    background: #2c2c2e; /* 匹配您网站的深色背景 */
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.visible .modal-window {
+    transform: scale(1);
+}
+
+.modal-window h3 {
+    margin-top: 0;
+    color: #fff;
+    font-weight: 600;
+    text-align: center;
+}
+
+.modal-window .form-group {
+    margin: 16px 0;
+}
+
+.modal-window label {
+    display: block;
+    color: #8e8e93;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.modal-window textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #4a4a4c;
+    background: #1c1c1e;
+    color: #fff;
+    border-radius: 8px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 16px;
+}
+
+.modal-window .btn.btn-primary {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #007aff; /* 匹配您网站的主要按钮颜色 */
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modal-window .btn.btn-primary:hover {
+    background: #0056b3;
+}
 
     </style>
 </head>
@@ -4412,22 +4495,30 @@ input:checked + .slider:before {
             <button id="open-sticker-panel-btn" class="chat-action-icon-btn action-button" title="表情面板">+</button>
             <button id="send-photo-btn" class="chat-action-icon-btn action-button" title="发送照片"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
             <button id="upload-image-btn" class="chat-action-icon-btn action-button" title="上传图片"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--text-primary);"><path d="M21 3.5H3C2.44772 3.5 2 3.94772 2 4.5V19.5C2 20.0523 2.44772 20.5 3 20.5H21C21.5523 20.5 22 20.0523 22 19.5V4.5C22 3.94772 21.5523 3.5 21 3.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.5 13.5C17.6046 13.5 18.5 12.6046 18.5 11.5C18.5 10.3954 17.6046 9.5 16.5 9.5C15.3954 9.5 14.5 10.3954 14.5 11.5C14.5 12.6046 15.3954 13.5 16.5 13.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 14.5L18 10.5L10.3333 18.5M12.5 16L9 12.5L2 19.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            <button id="transfer-btn" class="chat-action-icon-btn action-button" title="转账">￥</button>
             <button id="voice-message-btn" class="chat-action-icon-btn action-button" title="发送语音"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/><path d="M8 23h8"/></svg></button>
-<!-- ▼▼▼ 将这行新代码粘贴到“发送语音”按钮的后面 ▼▼▼ -->
-<button id="send-waimai-request-btn" class="chat-action-icon-btn action-button" title="发起外卖请求"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></button>
-<!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
 <!-- ▼▼▼ 【新增】视频通话按钮 ▼▼▼ -->
 <button id="video-call-btn" class="chat-action-icon-btn action-button" title="视频通话"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></button>
 <!-- ▲▲▲ 新增结束 ▲▲▲
 <!-- ▼▼▼群视频通话按钮 ▼▼▼ -->
 <button id="group-video-call-btn" class="chat-action-icon-btn action-button" title="群视频通话"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></button>
 <!-- ▲▲▲ 全新添加结束 ▲▲▲ -->
+<!-- ▼▼▼ 在 id="chat-input-actions-top" 的末尾，【添加】这个新的场景描述按钮 ▼▼▼ -->
+ <button id="time-skip-btn" class="chat-action-icon-btn action-button" title="添加场景描述">
+<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+<path d="M4 5v14l7-7-7-7zm9 0v14l7-7-7-7z"></path>
+ </svg>
+    </button>
+<!-- ▲▲▲ 添加结束 ▲▲▲ -->
+            <button id="transfer-btn" class="chat-action-icon-btn action-button" title="转账">￥</button>
+<!-- ▼▼▼ 将这行新代码粘贴到“发送语音”按钮的后面 ▼▼▼ -->
+<button id="send-waimai-request-btn" class="chat-action-icon-btn action-button" title="发起外卖请求"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></button>
+<!-- ▲▲▲ 新代码粘贴结束 ▲▲▲ -->
+<!-- ▼▼▼ 在 id="chat-input-actions-top" 的末尾，【添加】这个新的按钮 ▼▼▼ -->
+<button id="share-link-btn" class="chat-action-icon-btn action-button" title="分享链接"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg></button>
+    <!-- ▲▲▲ 替换结束 ▲▲▲ -->
 <!-- ▼▼▼发起投票按钮▼▼▼ -->
 <button id="send-poll-btn" class="chat-action-icon-btn action-button" title="发起投票"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h10"/><path d="M6 6h.01"/><path d="M8 12h10"/><path d="M6 12h.01"/><path d="M8 18h10"/><path d="M6 18h.01"/></svg></button>
 <!-- ▲▲▲ 替换结束 ▲▲▲ -->
-<!-- ▼▼▼ 在 id="chat-input-actions-top" 的末尾，【添加】这个新的按钮 ▼▼▼ -->
-<button id="share-link-btn" class="chat-action-icon-btn action-button" title="分享链接"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg></button>
 <!-- ▲▲▲ 新增HTML结束 ▲▲▲ -->
         </div>
         <div id="chat-input-main-row">
@@ -5262,7 +5353,24 @@ input:checked + .slider:before {
         </div>
     </div>
 </div>
-
+<!-- ▼▼▼ 【全新】场景描述 ▼▼▼ -->
+<div id="time-skip-modal" class="modal-overlay">
+    <div class="modal-window">
+        <h3>刚刚发生了什么</h3>
+        <form id="time-skip-form">
+            <div class="form-group">
+                <label for="time-skip-input">事件描述 (该消息AI可见，会作为上下文)</label>
+                <textarea id="time-skip-input" placeholder="例如：我们一起去山顶看了日落，然后吃了烧烤。（*注意*必须在描述之后跟一句对话，否则会被认为没有内容只回返回空白函数。）" required="" rows="4"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">发送</button>
+        </form>
+    </div>
+</div>
+<script>
+    // 您的JS代码
+</script>
+</body>
+</html>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -5270,6 +5378,13 @@ input:checked + .slider:before {
         // 1. 所有变量和常量定义
         // ===================================================================
         const db = new Dexie('GeminiChatDB');
+        
+// --- ▼▼▼ 在这里添加新元素 ▼▼▼ ---
+const timeSkipBtn = document.getElementById('time-skip-btn');
+const timeSkipModal = document.getElementById('time-skip-modal');
+const timeSkipForm = document.getElementById('time-skip-form');
+const timeSkipInput = document.getElementById('time-skip-input');
+// --- ▲▲▲ 添加结束 ▲▲▲ ---
         // --- 已修正 ---
         let state = { chats: {}, activeChatId: null, globalSettings: {}, apiConfig: {}, userStickers: [], worldBooks: [], personaPresets: [], qzoneSettings: {}, activeAlbumId: null };
         // --- 修正结束 ---
@@ -12336,6 +12451,8 @@ document.getElementById('save-wallpaper-btn').addEventListener('click', async ()
     applyAppIcons(); // 重新应用所有图标
 
     alert('外观设置已保存并应用！');
+   
+    
     showScreen('home-screen');
 });
 // ▲▲▲ 替换结束 ▲▲▲
@@ -14411,9 +14528,67 @@ document.getElementById('chat-messages').addEventListener('click', (e) => {
 
         // ===================================================================
         // 5. 启动！
-            
+                // ▼▼▼ 把它加在 init 函数的末尾，showScreen 的前面 ▼▼▼
+            setupTimeSkipSystem();
+    
             showScreen('home-screen');
         }
+// --- ▼▼▼ 用下面这【一整块新代码】替换掉您文件里对应的旧代码 ▼▼▼ ---
+function setupTimeSkipSystem() {
+    if (!timeSkipBtn) return; // 安全检查
+    timeSkipBtn.addEventListener('click', () => {
+        timeSkipForm.reset();
+        timeSkipModal.classList.add('visible');
+        timeSkipInput.focus();
+    });
+
+    timeSkipModal.addEventListener('click', (e) => {
+        if (e.target === timeSkipModal) {
+            timeSkipModal.classList.remove('visible');
+        }
+    });
+
+    timeSkipForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = timeSkipInput.value.trim();
+        if (text) {
+            //【重要】这里现在调用的是下面那个修正后的新函数
+            sendTimeSkipMessage(text);
+        }
+    });
+}
+
+//【这是修正后的版本】
+async function sendTimeSkipMessage(text) {
+    // 安全检查，确保当前有活跃的聊天
+    if (!text || !state.activeChatId) return;
+    const chat = state.chats[state.activeChatId];
+    if (!chat) return;
+
+    // 1. 创建一个标准的“系统消息”对象
+    const msg = {
+        role: 'system',
+        type: 'pat_message', // 复用“拍一拍”的居中灰色气泡样式
+        content: `[场景描述] ${text}`,
+        timestamp: Date.now()
+    };
+
+    // 2. 将新消息添加到当前聊天的历史记录中
+    chat.history.push(msg);
+
+    // 3. 将更新后的聊天数据保存到数据库
+    await db.chats.put(chat);
+
+    // 4. 调用您已有的 appendMessage 函数，在界面上显示这条新消息
+    appendMessage(msg, chat);
+
+    // 5. 刷新左侧的聊天列表
+    renderChatList();
+
+    // 6. 关闭弹窗
+    timeSkipModal.classList.remove('visible');
+}
+// --- ▲▲▲ 替换结束 ▲▲▲ ---
 
         init();
     });
