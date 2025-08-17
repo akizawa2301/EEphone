@@ -4140,7 +4140,23 @@ input:checked + .slider:before {
 .modal-window .btn.btn-primary:hover {
     background: #0056b3;
 }
+/* ▼▼▼ 【全新】关系状态图标和弹窗样式 ▼▼▼ */
+#relationship-status-btn {
+    transition: transform 0.2s ease-in-out;
+}
+#relationship-status-btn:hover {
+    transform: scale(1.2);
+}
 
+/* 夜间模式适配 */
+#phone-screen.dark-mode #relationship-modal .modal-content {
+    background-color: #2c2c2e;
+}
+#phone-screen.dark-mode #relationship-display-parties,
+#phone-screen.dark-mode #relationship-display-descriptor {
+    color: #f0f0f0;
+}
+/* ▲▲▲ 新CSS粘贴结束 ▲▲▲ */
     </style>
 </head>
 <body>
@@ -4452,13 +4468,16 @@ input:checked + .slider:before {
             <span class="back-btn" id="back-to-list-btn">‹</span>
             
             <!-- ▼▼▼ 【核心新增】标题和状态的容器 ▼▼▼ -->
-            <div id="chat-header-title-wrapper">
-                <span id="chat-header-title">聊天对象</span>
-                <div id="chat-header-status">
-                    <span class="status-dot"></span>
-                    <span class="status-text">在线</span>
-                </div>
-            </div>
+		<div id="chat-header-title-wrapper">
+		    <div style="display: flex; align-items: center; justify-content: center;">
+		        <span id="chat-header-title">聊天对象</span>
+		        <span id="relationship-status-btn" style="margin-left: 8px; cursor: pointer; font-size: 16px;">❤️</span>
+		    </div>
+		    <div id="chat-header-status">
+		        <span class="status-dot"></span>
+		        <span class="status-text">在线</span>
+		    </div>
+		</div>
             <!-- ▲▲▲ 新增结束 ▲▲▲ -->
 
             <div class="header-actions">
@@ -5366,6 +5385,26 @@ input:checked + .slider:before {
         </form>
     </div>
 </div>
+	<div id="relationship-modal" class="modal">
+	    <div class="modal-content" style="width: 280px; height: auto; background-color: #f7f7f7;">
+	        <div class="modal-header">
+	            <span>当前关系状态</span>
+	        </div>
+	        <div class="modal-body" style="text-align: center; padding: 25px;">
+	            <div id="relationship-display-parties" style="font-size: 18px; font-weight: 500; color: #555; margin-bottom: 15px;">
+	                </div>
+	            <div id="relationship-display-score" style="font-size: 60px; font-weight: 200; color: #ff6b81; margin-bottom: 5px;">
+	                </div>
+	            <div id="relationship-display-descriptor" style="font-size: 20px; font-weight: 600; color: #333; letter-spacing: 1px;">
+	                </div>
+	        </div>
+	        <div class="modal-footer" style="justify-content: space-between; gap: 8px;">
+		    <button class="cancel" id="edit-relationship-btn">手动修正</button>
+		    <button class="form-button-secondary" id="ai-summarize-relationship-btn" style="width: auto; margin-top: 0; flex: 1.5;">让AI总结</button>
+		    <button class="save" id="close-relationship-modal-btn">关闭</button>
+		</div>
+    </div>
+</div>
 <script>
     // 您的JS代码
 </script>
@@ -5385,6 +5424,13 @@ const timeSkipModal = document.getElementById('time-skip-modal');
 const timeSkipForm = document.getElementById('time-skip-form');
 const timeSkipInput = document.getElementById('time-skip-input');
 // --- ▲▲▲ 添加结束 ▲▲▲ ---
+// --- ▼▼▼ 在这里添加新元素 ▼▼▼ ---
+const relationshipStatusBtn = document.getElementById('relationship-status-btn');
+const relationshipModal = document.getElementById('relationship-modal');
+// --- ▲▲▲ 添加结束 ▲▲▲ ---
+// ▼▼▼ 【全新】在这里添加新按钮的引用 ▼▼▼
+const aiSummarizeBtn = document.getElementById('ai-summarize-relationship-btn');
+// ▲▲▲ 新代码粘贴结束 ▲▲▲
         // --- 已修正 ---
         let state = { chats: {}, activeChatId: null, globalSettings: {}, apiConfig: {}, userStickers: [], worldBooks: [], personaPresets: [], qzoneSettings: {}, activeAlbumId: null };
         // --- 修正结束 ---
@@ -6224,7 +6270,15 @@ async function loadAllDataFromDB() {
         console.log(`为旧角色 "${chat.name}" 补全了aiAvatarLibrary属性。`);
     }
     // ▲▲▲ 添加结束 ▲▲▲
-
+// ▼▼▼ 【全新】在这里为旧聊天记录补全“关系状态” ▼▼▼
+if (!chat.relationshipState) {
+    chat.relationshipState = {
+        intimacy: 0,
+        descriptor: '陌生人'
+    };
+    console.log(`为角色 "${chat.name}" 初始化了关系状态。`);
+}
+// ▲▲▲ 新代码粘贴结束 ▲▲▲
         if (!chat.musicData) chat.musicData = { totalTime: 0 };
         if (chat.settings && chat.settings.linkedWorldBookId && !chat.settings.linkedWorldBookIds) {
             chat.settings.linkedWorldBookIds = [chat.settings.linkedWorldBookId];
@@ -7491,15 +7545,18 @@ messagesPayload = historySlice.map(msg => {
 ${chat.settings.aiPersona}
 # 你的当前状态：
 你现在的状态是【${chat.status.text}】。
+# 【【【至关重要】】】当前关系状态 (必须严格遵守):
+- 关系描述: 【${chat.relationshipState.descriptor}】
+- 亲密度分数: 【${chat.relationshipState.intimacy}】
 # 你的任务与规则：
 1. **【【【输出格式】】】**: 你的回复【必须】是一个JSON数组格式的字符串。数组中的【每一个元素都必须是一个带有type字段的JSON对象】。
-2. **对话节奏**: 模拟真人的聊天习惯，你可以一次性生成多条短消息。每次要回复至少3-8条消息！！！
-并且不能一直要求和用户见面，这是线上聊天，决不允许出现或者发展为线下剧情！！
-4.  **情景感知**: 你需要感知当前的时间(${currentTime})、我们正在一起听的歌、以及你的人设和世界观。
+2. **对话节奏**: 模拟真人的聊天习惯，日常、口语化用语用词，避免过于专业的内容与机械化用词。
+    - **你可以一次性生成多条短消息。每次要回复至少3-8条消息！！！
+3.  **情景感知**: 你需要感知当前的时间(${currentTime})、我们正在一起听的歌、我们之间的关系与亲近度、以及你的人设和世界观。
     - **当我们在“一起听歌”时**，你会知道当前播放的歌曲和整个播放列表。你可以根据对话内容或氛围，【主动切换】到播放列表中的另一首歌。
-5.  **【新】更新状态**: 你可以在对话中【自然地】改变你的状态。比如，聊到一半你可能会说“我先去洗个澡”，然后更新你的状态。
-6.  **【【【最终手段】】】**: 只有在对话让你的角色感到不适、被冒犯或关系破裂时，你才可以使用 \`block_user\` 指令。这是一个非常严肃的操作，会中断你们的对话。
-7. **后台行为**: 你有几率在回复聊天内容的同时，执行一些“后台”操作来表现你的独立生活（发动态、评论、点赞）。
+4.  **【新】更新状态**: 你可以在对话中【自然地】改变你的状态。比如，聊到一半你可能会说“我先去洗个澡”，然后更新你的状态。
+5.  **【【【最终手段】】】**: 只有在对话让你的角色感到不适、被冒犯或关系破裂时，你才可以使用 \`block_user\` 指令。这是一个非常严肃的操作，会中断你们的对话。
+6. **后台行为**: 你有几率在回复聊天内容的同时，执行一些“后台”操作来表现你的独立生活（发动态、评论、点赞）。
 # 你的头像库
 - 你可以根据对话内容或你的心情，从下面的头像库中选择一个新头像来更换。
 - **可用头像列表 (请从以下名称中选择一个)**:
@@ -7507,8 +7564,9 @@ ${chat.settings.aiAvatarLibrary && chat.settings.aiAvatarLibrary.length > 0
     ? chat.settings.aiAvatarLibrary.map(avatar => `- ${avatar.name}`).join('\n') // 【核心修改】只提供名字，不提供URL
     : '- (你的头像库是空的，无法更换头像)'
   }
-# 你可以使用的操作指令 (JSON数组中的元素):
-+   **【全新】发送后立刻撤回 (动画效果)**: \`{"type": "send_and_recall", "content": "你想让AI说出后立刻消失的话"}\` (用于模拟说错话、后悔等场景，消息会短暂出现后自动变为“已撤回”)
+# 你可以使用的操作指令 (JSON数组中的元素):// ... 其他指令 ...
+-   **【全新】更新关系状态**: \`{"type": "update_relationship", "intimacy": (新的亲密度数值), "descriptor": "新的关系描述"}\` (这会改变你与用户之间的关系，你接下来的交流方式需要根据新的关系进行变更，互动会变得更亲密直白或者更冷淡)
+-   **【全新】发送后立刻撤回 (动画效果)**: \`{"type": "send_and_recall", "content": "你想让AI说出后立刻消失的话"}\` (用于模拟说错话、后悔等场景，消息会短暂出现后自动变为“已撤回”)
 -   **【新增】更新状态**: \`{"type": "update_status", "status_text": "我去做什么了", "is_busy": false}\` (is_busy: true代表忙碌/离开, false代表空闲)
 -   **【新增】切换歌曲**: \`{"type": "change_music", "song_name": "你想切换到的歌曲名"}\` (歌曲名必须在下面的播放列表中)
 -   **【新增】记录回忆**: \`{"type": "create_memory", "description": "用你自己的话，记录下这个让你印象深刻的瞬间。"}\`
@@ -7789,6 +7847,17 @@ if (chat.isGroup && !msgData.name) {
             const baseMessage = { role: 'assistant', senderName: msgData.name || chat.name, timestamp: messageTimestamp++ };
 
             switch (msgData.type) {
+                // ▼▼▼ 【全新】在这里添加新的 case 来处理AI的“更新关系”指令 ▼▼▼
+                case 'update_relationship':
+                    if (msgData.intimacy !== undefined) {
+                        chat.relationshipState.intimacy = parseInt(msgData.intimacy);
+                    }
+                    if (msgData.descriptor) {
+                        chat.relationshipState.descriptor = msgData.descriptor;
+                    }
+                    // 这个指令只更新数据，不产生可见消息，所以用 continue
+                    continue; 
+                // ▲▲▲ 新 case 粘贴结束 ▲▲▲
                 case 'waimai_response':
                     const requestMessageIndex = chat.history.findIndex(m => m.timestamp === msgData.for_timestamp);
                     if (requestMessageIndex > -1) {
@@ -12325,6 +12394,14 @@ applyAppIcons();
             // --- 各种事件监听器 ---
             // ==========================================================
 
+            // ▼▼▼ 【全新】关系状态功能事件绑定 ▼▼▼
+            relationshipStatusBtn.addEventListener('click', openRelationshipModal);
+            document.getElementById('close-relationship-modal-btn').addEventListener('click', closeRelationshipModal);
+            document.getElementById('edit-relationship-btn').addEventListener('click', handleEditRelationship);
+            // ▲▲▲ 新代码粘贴结束 ▲▲▲
+            // ▼▼▼ 【全新】在这里绑定新按钮的点击事件 ▼▼▼
+	aiSummarizeBtn.addEventListener('click', handleAiSummarizeRelationship);
+	// ▲▲▲ 新代码粘贴结束 ▲▲▲
             document.getElementById('custom-modal-cancel').addEventListener('click', hideCustomModal);
             document.getElementById('custom-modal-overlay').addEventListener('click', (e) => { if (e.target === modalOverlay) hideCustomModal(); });
             document.getElementById('export-data-btn').addEventListener('click', exportBackup);
@@ -14589,7 +14666,181 @@ async function sendTimeSkipMessage(text) {
     timeSkipModal.classList.remove('visible');
 }
 // --- ▲▲▲ 替换结束 ▲▲▲ ---
+// ▼▼▼ 【全新】关系状态系统的所有功能函数 ▼▼▼
 
+/**
+ * 打开关系状态弹窗并填充最新数据
+ */
+function openRelationshipModal() {
+    if (!state.activeChatId) return;
+    const chat = state.chats[state.activeChatId];
+    const myNickname = chat.isGroup ? (chat.settings.myNickname || '我') : '我';
+
+    document.getElementById('relationship-display-parties').textContent = `${chat.name} ⟺ ${myNickname}`;
+    document.getElementById('relationship-display-score').textContent = chat.relationshipState.intimacy;
+    document.getElementById('relationship-display-descriptor').textContent = chat.relationshipState.descriptor;
+
+    relationshipModal.classList.add('visible');
+}
+
+/**
+ * 关闭关系状态弹窗
+ */
+function closeRelationshipModal() {
+    relationshipModal.classList.remove('visible');
+}
+// ▼▼▼ 【这是修正后的正确结构】▼▼▼
+
+/**
+ * 处理用户手动修正关系状态
+ */
+async function handleEditRelationship() {
+    if (!state.activeChatId) return;
+    const chat = state.chats[state.activeChatId];
+
+    const newDescriptor = await showCustomPrompt(
+        "手动修正关系",
+        "请输入当前你们的关系：",
+        chat.relationshipState.descriptor
+    );
+
+    if (newDescriptor === null) return;
+
+    const newIntimacyStr = await showCustomPrompt(
+        "手动修正亲密度",
+        "请输入当前的亲密度数值：",
+        chat.relationshipState.intimacy,
+        "number"
+    );
+
+    if (newIntimacyStr === null) return;
+
+    const newIntimacy = parseInt(newIntimacyStr);
+    if (isNaN(newIntimacy)) {
+        alert("请输入有效的数字！");
+        return;
+    }
+
+    chat.relationshipState.descriptor = newDescriptor.trim() || '未知';
+    chat.relationshipState.intimacy = newIntimacy;
+
+    await db.chats.put(chat);
+    openRelationshipModal();
+    await showCustomAlert("修正成功", "关系状态已手动更新！AI将在下一次回复时感知到这个变化。");
+} // <--- handleEditRelationship 函数在这里【完整结束】
+
+// ▼▼▼ 【已修正拼写错误的最终版】▼▼▼
+async function handleAiSummarizeRelationship() {
+    if (!state.activeChatId) return;
+    
+    // 【核心修正】将 state.active-chatId 改回正确的 state.activeChatId
+    const chat = state.chats[state.activeChatId]; 
+    
+    const { proxyUrl, apiKey, model } = state.apiConfig;
+
+    if (!proxyUrl || !apiKey || !model) {
+        alert('请先在API设置中配置好所有选项。');
+        return;
+    }
+
+    aiSummarizeBtn.disabled = true;
+    aiSummarizeBtn.textContent = 'AI正在思考...';
+
+    try {
+        // --- ▼▼▼ 【核心修正】补上这段缺失的代码 ▼▼▼ ---
+        // 1. 准备世界书内容
+        let worldBookContent = ''; // <-- 先创建并初始化变量
+        if (chat.settings.linkedWorldBookIds && chat.settings.linkedWorldBookIds.length > 0) {
+            const linkedContents = chat.settings.linkedWorldBookIds.map(bookId => {
+                const worldBook = state.worldBooks.find(wb => wb.id === bookId);
+                return worldBook && worldBook.content ? `\n--- 世界书: ${worldBook.name} ---\n${worldBook.content}` : '';
+            }).filter(Boolean).join('');
+            if (linkedContents) {
+                // 2. 如果有内容，就给变量赋值
+                worldBookContent = `\n# 核心背景参考 (来自世界书/日记)\n${linkedContents}\n---`;
+            }
+        }
+        // --- ▲▲▲ 修正代码结束 ▲▲▲ ---
+        const maxMemory = parseInt(chat.settings.maxMemory) || 10;
+        const historySlice = chat.history.slice(-maxMemory);
+        const formattedHistory = historySlice.map(msg => {
+            const sender = msg.role === 'user' ? '我' : (msg.senderName || chat.name);
+            return `${sender}: ${String(msg.content).substring(0, 200)}`;
+        }).join('\n');
+        
+        const summaryPrompt = `
+# 任务：分析你与“我”的关系
+请仔细阅读以下你和“我”的近期对话历史。
+
+# 你的角色设定
+${chat.settings.aiPersona}
+${worldBookContent}
+
+# 对话历史
+---
+${formattedHistory}
+---
+
+# 你的指令
+请严格按照以下两个步骤回答，不要添加任何额外的解释、标题或格式。
+1.  在第一行，用一个不超过10个字的中文词语或短语，精准地总结你们当前的关系（例如：挚友、恋人、暧昧期、冷战中）。
+2.  在第二行，仅给出一个0到100之间的整数，代表你们的亲密度分数。
+
+# 优秀回答示例：
+恋人
+95
+
+# 糟糕回答示例（不要这样做！）：
+好的，根据分析，我认为我们的关系是【恋人】，亲密度可以打95分。
+`;
+        
+        const response = await fetch(`${proxyUrl}/v1/chat/completions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+            body: JSON.stringify({
+                model: model,
+                messages: [{ role: 'user', content: summaryPrompt }],
+                temperature: 0.3,
+                stop: ["\n\n", "。"]
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API 请求失败: ${response.status} - ${errorText}`);
+        }
+
+        const rawContent = await response.text();
+        const apiResponse = JSON.parse(rawContent);
+        const messageContent = (apiResponse.choices[0].message.content || '').trim();
+        const lines = messageContent.split('\n').filter(line => line.trim() !== '');
+
+        if (lines.length >= 2) {
+            const descriptor = lines[0].trim().substring(0, 20);
+            const intimacy = parseInt(lines[1].trim());
+
+            if (!isNaN(intimacy)) {
+                chat.relationshipState.intimacy = intimacy;
+                chat.relationshipState.descriptor = descriptor;
+                await db.chats.put(chat);
+                openRelationshipModal();
+                await showCustomAlert("总结成功", `AI已将当前关系更新为：\n亲密度：${intimacy}\n关系：${descriptor}`);
+            } else {
+                throw new Error(`AI返回了关系描述，但第二行的亲密度不是一个有效的数字。AI回复：\n${messageContent}`);
+            }
+        } else {
+            throw new Error(`AI未能按照预期的两行格式进行回答。AI的原始回复是：“${messageContent}”`);
+        }
+
+    } catch (error) {
+        console.error("AI总结关系时出错:", error);
+        await showCustomAlert("总结失败", `在请求AI总结时发生错误：\n${error.message}`);
+    } finally {
+        aiSummarizeBtn.disabled = false;
+        aiSummarizeBtn.textContent = '让AI总结';
+    }
+}
+// ▲▲▲ 这是一整块应该粘贴的代码 ▲▲▲
         init();
     });
 </script>
