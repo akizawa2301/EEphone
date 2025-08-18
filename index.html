@@ -9605,6 +9605,9 @@ async function saveEditedMessage(timestamp, simpleContent = null) {
     const messageIndex = chat.history.findIndex(m => m.timestamp === timestamp);
     if (messageIndex === -1) return;
 
+    // 【核心修正1】获取原始消息，以便我们参考它的类型
+    const originalMessage = chat.history[messageIndex];
+    
     let newMessages = [];
 
     // 判断是来自高级编辑器还是简单编辑器
@@ -9614,9 +9617,8 @@ async function saveEditedMessage(timestamp, simpleContent = null) {
         if (rawContent) {
             const parsedResult = parseEditedContent(rawContent);
             const newMessage = {
-                role: chat.history[messageIndex].role,
-                senderName: chat.history[messageIndex].senderName,
-                // 注意：这里我们暂时不设置时间戳
+                role: originalMessage.role,
+                senderName: originalMessage.senderName,
                 content: parsedResult.content || '',
             };
             if (parsedResult.type && parsedResult.type !== 'text') newMessage.type = parsedResult.type;
@@ -9629,24 +9631,27 @@ async function saveEditedMessage(timestamp, simpleContent = null) {
             if (parsedResult.description && parsedResult.type === 'ai_image') {
                  newMessage.content = parsedResult.description;
             }
-
+            
+            // 【核心修正2】在这里判断并强制保留系统提示的样式类型
+            if (originalMessage.role === 'system' && (!newMessage.type || newMessage.type === 'text')) {
+                newMessage.type = originalMessage.type;
+            }
+            
             newMessages.push(newMessage);
         }
     } else {
-        // --- 来自高级编辑器 ---
+        // 高级编辑器的逻辑（这里也需要加入同样的修正）
         const editorContainer = document.getElementById('message-editor-container');
         const editorBlocks = editorContainer.querySelectorAll('.message-editor-block');
 
         for (const block of editorBlocks) {
-            const textarea = block.querySelector('textarea');
-            const rawContent = textarea.value.trim();
+            const rawContent = block.querySelector('textarea').value.trim();
             if (!rawContent) continue;
 
             const parsedResult = parseEditedContent(rawContent);
             const newMessage = {
-                role: chat.history[messageIndex].role,
-                senderName: chat.history[messageIndex].senderName,
-                // 同样，这里我们先不分配时间戳
+                role: originalMessage.role,
+                senderName: originalMessage.senderName,
                 content: parsedResult.content || '',
             };
             
@@ -9659,6 +9664,11 @@ async function saveEditedMessage(timestamp, simpleContent = null) {
             if (parsedResult.source_name) newMessage.source_name = parsedResult.source_name;
             if (parsedResult.description && parsedResult.type === 'ai_image') {
                  newMessage.content = parsedResult.description;
+            }
+
+            // 【核心修正2】同样在这里判断并强制保留系统提示的样式类型
+            if (originalMessage.role === 'system' && (!newMessage.type || newMessage.type === 'text')) {
+                newMessage.type = originalMessage.type;
             }
 
             newMessages.push(newMessage);
