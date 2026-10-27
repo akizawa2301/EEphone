@@ -1,0 +1,21 @@
+{
+  "name": "秋泽的330",
+  "short_name": "秋泽的330",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "description": "聊天应用",
+  "icons": [
+    {
+      "src": "./akizawaslogo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./akizawaslogo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
